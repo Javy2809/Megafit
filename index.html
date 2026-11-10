@@ -4,14 +4,14 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MegaFit">
-<title>MegaFit</title>
+<meta name="apple-mobile-web-app-title" content="ALCYFIT">
+<title>ALCYFIT</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head><body>
-<title>MegaFit</title>
+<title>ALCYFIT</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,8 +42,7 @@ p{margin:0}
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px 4px}
 .logo{font-family:var(--display);font-size:2rem;font-weight:700;font-style:italic;letter-spacing:.03em;line-height:1;display:flex;align-items:center;gap:0}
-.logo i{display:inline-block;width:8px;height:26px;background:var(--accent);border-radius:2px;transform:skewX(-16deg);margin-right:4px}
-.logo i.i2{height:18px;background:var(--ink);margin-right:10px;align-self:center}
+.logo-mark{width:24px;height:24px;flex-shrink:0;margin-right:9px;align-self:center}
 .logo span{color:var(--ink)}
 .logo b{color:var(--accent);font-weight:700;margin-left:2px}
 .sync{font-size:.75rem;font-weight:600;white-space:nowrap}
@@ -236,7 +235,7 @@ footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
 <header>
   <div class="wrap">
     <div class="brand">
-      <div class="logo" aria-label="MegaFit"><i></i><i class="i2"></i><span>MEGA</span><b>FIT</b></div>
+      <div class="logo" aria-label="ALCYFIT"><svg class="logo-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7 15.4 10.6 24 12C15.4 13.4 12.9 17 12 24C11.1 17 8.6 13.4 0 12C8.6 10.6 11.1 7 12 0Z" fill="var(--accent)"/></svg><span>ALCY</span><b>FIT</b></div>
       <div class="row" style="gap:8px;justify-content:flex-end"><span class="sync info" id="sync" role="status">Cargando…</span><span class="goal-pill" id="goalPill">Bajar grasa</span></div>
     </div>
     <nav id="nav" aria-label="Secciones">
@@ -252,7 +251,7 @@ footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
 
 <main class="wrap" id="main">
   <div id="installBanner" class="banner" hidden>
-    <div style="flex:1 1 240px;display:flex;flex-direction:column;gap:4px"><b>Instala MegaFit en tu teléfono</b><span class="small" id="installHow" style="color:var(--ink)"></span></div>
+    <div style="flex:1 1 240px;display:flex;flex-direction:column;gap:4px"><b>Instala ALCYFIT en tu teléfono</b><span class="small" id="installHow" style="color:var(--ink)"></span></div>
     <div class="row"><button class="btn primary sm" id="installBtn" hidden>Instalar</button><button class="btn sm" id="installClose">Ahora no</button></div>
   </div>
   <div id="exampleBanner" class="banner" hidden>
@@ -267,7 +266,7 @@ footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
       <p class="lead">Con estos datos calculamos cuánto comer y cómo entrenar. Todo se guarda solo en este teléfono.</p>
     </div>
     <div class="welcome" id="welcome" hidden>
-      <h3>Bienvenido a MegaFit</h3>
+      <h3>Bienvenido a ALCYFIT</h3>
       <p>Antes de empezar, completa tus datos. Tus números, comidas, ejercicios, progreso y Mega Scan se calculan con ellos, por eso esas secciones se abren cuando termines.</p>
       <div><span class="small">Te falta:</span><div class="row" id="missChips" style="margin-top:6px"></div></div>
     </div>
@@ -436,7 +435,7 @@ footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
   <section class="view" id="v-megascan" hidden></section>
 </main>
 
-<footer class="wrap"><p>MegaFit da una guía general basada en fórmulas usadas por nutricionistas y entrenadores. No reemplaza a un médico. Si tienes una condición de salud, estás embarazada o tomas medicamentos, consulta a un profesional antes de cambiar tu dieta o empezar a entrenar.</p><p style="margin-top:8px">MegaFit · versión 2.2</p></footer>
+<footer class="wrap"><p>ALCYFIT da una guía general basada en fórmulas usadas por nutricionistas y entrenadores. No reemplaza a un médico. Si tienes una condición de salud, estás embarazada o tomas medicamentos, consulta a un profesional antes de cambiar tu dieta o empezar a entrenar.</p><p style="margin-top:8px">ALCYFIT · versión 2.3</p></footer>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -1566,7 +1565,7 @@ function renderScan(r){
       on.hidden=true;$("#snap",el).hidden=false;
     }catch(e){
       on.disabled=false;on.textContent="Activar cámara";
-      err(e&&e.name==="NotAllowedError"?"No diste permiso para la cámara. Actívalo en Ajustes → Apps → MegaFit → Permisos, o usa “Elegir de la galería”.":"No se pudo abrir la cámara. Cierra otras apps que la usen o usa “Elegir de la galería”.");
+      err(e&&e.name==="NotAllowedError"?"No diste permiso para la cámara. Actívalo en Ajustes → Apps → ALCYFIT → Permisos, o usa “Elegir de la galería”.":"No se pudo abrir la cámara. Cierra otras apps que la usen o usa “Elegir de la galería”.");
     }});
   const sn=$("#snap",el);if(sn)sn.addEventListener("click",()=>{const v=$("#camv",el);if(!v.videoWidth){err("La cámara aún no está lista. Intenta de nuevo.");return;}
     SC.img=shrinkToJpeg(v,v.videoWidth,v.videoHeight);SC.res=null;SC.err=null;stopCam();renderScan(calc(S.p));});
@@ -1601,7 +1600,7 @@ function renderScan(r){
   let deferred=null;
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;btn.hidden=false;how.textContent="Ábrela como app desde tu pantalla de inicio. Funciona sin internet y tus datos quedan guardados en tu teléfono.";});
   btn.addEventListener("click",async()=>{if(!deferred)return;deferred.prompt();try{await deferred.userChoice;}catch(e){}deferred=null;bn.hidden=true;});
-  window.addEventListener("appinstalled",()=>{bn.hidden=true;toast("MegaFit quedó instalada");});
+  window.addEventListener("appinstalled",()=>{bn.hidden=true;toast("ALCYFIT quedó instalada");});
   document.getElementById("installClose").addEventListener("click",()=>{bn.hidden=true;try{localStorage.setItem("megafit_install_later",String(Date.now()));}catch(e){}});
 })();
 
