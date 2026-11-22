@@ -217,6 +217,7 @@ nav a .lock::before{content:"";position:absolute;left:1.5px;top:-5px;width:6px;h
 .lt-list.good li::marker{color:var(--good)} .lt-list.bad li::marker{color:var(--bad)}
 input,select,textarea{font-size:max(16px,1em)}
 footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
+footer a,#consentBox a{color:var(--accent);font-weight:600}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--surface);color:var(--ink);border:1px solid var(--accent);padding:10px 16px;border-radius:10px;font-weight:600;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.6);max-width:calc(100% - 32px)}
 
 @media (max-width:560px){
@@ -378,8 +379,8 @@ footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
           <button data-v="vege">Vegetariano<small>Sin carne ni pescado</small></button>
           <button data-v="vegan">Vegano<small>100% vegetal</small></button>
           <button data-v="keto">Keto<small>Muy baja en carbohidratos</small></button>
-          <button data-v="bayter">Método Dr. Bayter<small>Proteína y grasa animal, sin carbohidratos</small></button>
-          <button data-v="molecular">Alimentación molecular<small>Dr. Benjamín Ramírez: 1 proteína, 1 carbohidrato y 1 grasa</small></button>
+          <button data-v="bayter">Keto animal<small>Proteína y grasa animal, sin carbohidratos</small></button>
+          <button data-v="molecular">Combinación 1-1-1<small>1 proteína, 1 carbohidrato y 1 grasa en cada comida</small></button>
         </div><p class="small" id="dietInfo"></p></fieldset>
       </div>
       <div class="row">
@@ -409,6 +410,12 @@ footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
       </div>
     </div>
 
+    <div class="card" id="consentBox">
+      <div class="card-head"><h3>Tu permiso</h3></div>
+      <p class="small">Para armar tu plan, Unlimitra usa datos de salud como tu peso, tus medidas y tus condiciones. No los vendemos ni los compartimos con nadie para publicidad.</p>
+      <label class="chk" style="align-items:flex-start"><input type="checkbox" id="c-consent" data-k="consentimiento" style="flex-shrink:0;margin-top:2px"><span>Tengo 16 años o más, acepto los <a href="terminos.html">Términos de uso</a> y doy mi permiso para que se usen mis datos de salud como explica la <a href="privacidad.html">Política de privacidad</a>.</span></label>
+    </div>
+
     <div class="card">
       <div class="card-head"><h3>Tus datos</h3></div>
       <p class="small">Tu perfil, tus mediciones, tus hábitos y tus ajustes se guardan en este teléfono cada vez que cambias algo. Solo tú puedes verlos. Para pasarlos a otro teléfono, copia tu respaldo y pégalo allá.</p>
@@ -435,7 +442,7 @@ footer{color:var(--muted);font-size:.8rem;padding-block:0 32px}
   <section class="view" id="v-megascan" hidden></section>
 </main>
 
-<footer class="wrap"><p>Unlimitra da una guía general basada en fórmulas usadas por nutricionistas y entrenadores. No reemplaza a un médico. Si tienes una condición de salud, estás embarazada o tomas medicamentos, consulta a un profesional antes de cambiar tu dieta o empezar a entrenar.</p><p style="margin-top:8px">Unlimitra · versión 2.6</p></footer>
+<footer class="wrap"><p>Unlimitra da una guía general basada en fórmulas usadas por nutricionistas y entrenadores. No reemplaza a un médico. Si tienes una condición de salud, estás embarazada o tomas medicamentos, consulta a un profesional antes de cambiar tu dieta o empezar a entrenar.</p><p style="margin-top:8px">Unlimitra · versión 3.0 · <a href="privacidad.html">Privacidad</a> · <a href="terminos.html">Términos</a></p></footer>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -455,7 +462,7 @@ function dayNum(s){return Math.round(Date.parse(s+"T12:00:00")/86400000);}
 function niceDate(s){const d=new Date(s+"T12:00:00");return d.toLocaleDateString("es",{day:"numeric",month:"short"});}
 
 /* ---------- estado ---------- */
-const BLANK={sexo:"h",edad:null,peso:null,altura:null,unidad:"kg",altUnidad:"cm",actividad:1.375,objetivo:"perder",ritmo:"normal",pesoMeta:null,lugar:"gym",experiencia:"principiante",dias:3,minutos:45,les_rodilla:false,les_espalda:false,les_hombro:false,comidas:4,dieta:"omni",entreno:"pesas",deporte:"futbol",horasDeporte:6,sinRes:false,sinAves:false,sinMariscos:false,sinLacteos:false,cintura:null,cuello:null,cadera:null,embarazo:false,condicion:false};
+const BLANK={sexo:"h",edad:null,peso:null,altura:null,unidad:"kg",altUnidad:"cm",actividad:1.375,objetivo:"perder",ritmo:"normal",pesoMeta:null,lugar:"gym",experiencia:"principiante",dias:3,minutos:45,les_rodilla:false,les_espalda:false,les_hombro:false,comidas:4,dieta:"omni",entreno:"pesas",deporte:"futbol",horasDeporte:6,sinRes:false,sinAves:false,sinMariscos:false,sinLacteos:false,consentimiento:false,cintura:null,cuello:null,cadera:null,embarazo:false,condicion:false};
 function exampleState(){
   const w=[[-28,82.0,94],[-24,81.8,null],[-21,81.5,93],[-17,81.3,null],[-14,81.0,92.5],[-10,80.8,null],[-7,80.5,92],[-3,80.3,null],[0,80.1,91.5]];
   return {v:1,example:true,kcalAdj:0,lastAdj:null,
@@ -516,9 +523,9 @@ const wOut=kg=>S.p.unidad==="lb"?kg*LB:kg;
 /* ---------- validación ---------- */
 const RANGES={edad:[16,90,"Edad entre 16 y 90 años. Para menores de 16, consulta con un pediatra o nutricionista."],peso:[35,250,"Revisa el peso: debe estar entre 35 y 250 kg (77–550 lb)."],altura:[130,220,"Revisa la altura: entre 130 y 220 cm."],pesoMeta:[35,250,"Revisa el peso meta."],cintura:[50,200,"Revisa la cintura (50–200 cm)."],cuello:[25,60,"Revisa el cuello (25–60 cm)."],cadera:[60,200,"Revisa la cadera (60–200 cm)."]};
 const REQ_SEL={sexo:"sexo",actividad:"nivel de actividad",objetivo:"objetivo",entreno:"cómo entrenas",dieta:"tipo de alimentación"};
-const REQ_ORDER=["sexo","edad","peso","altura","actividad","objetivo","entreno","dieta"];
-const REQ_LABEL=Object.assign({edad:"edad",peso:"peso",altura:"estatura"},REQ_SEL);
-function errors(p){const e={};for(const k in REQ_SEL)if(p[k]==null||p[k]==="")e[k]="missing";for(const k in RANGES){const v=p[k];const req=["edad","peso","altura"].includes(k);if(v==null||v===""||isNaN(v)){if(req)e[k]="missing";continue;}if(v<RANGES[k][0]||v>RANGES[k][1])e[k]=RANGES[k][2];}return e;}
+const REQ_ORDER=["sexo","edad","peso","altura","actividad","objetivo","entreno","dieta","consentimiento"];
+const REQ_LABEL=Object.assign({edad:"edad",peso:"peso",altura:"estatura",consentimiento:"tu permiso (al final)"},REQ_SEL);
+function errors(p){const e={};for(const k in REQ_SEL)if(p[k]==null||p[k]==="")e[k]="missing";if(!p.consentimiento)e.consentimiento="missing";for(const k in RANGES){const v=p[k];const req=["edad","peso","altura"].includes(k);if(v==null||v===""||isNaN(v)){if(req)e[k]="missing";continue;}if(v<RANGES[k][0]||v>RANGES[k][1])e[k]=RANGES[k][2];}return e;}
 
 /* ---------- cálculos ---------- */
 const GOALS={perder:"Bajar grasa",ganar:"Ganar músculo",recomp:"Recomposición",mantener:"Mantenerme"};
@@ -540,8 +547,8 @@ const STYLES={
   vege:{n:"Vegetariano",d:"Sin carne ni pescado. Huevos y lácteos sí."},
   vegan:{n:"Vegano",d:"100% vegetal: sin carne, pescado, huevos ni lácteos. La proteína viene de soya, tofu y legumbres."},
   keto:{n:"Keto",d:"Menos de 30 g de carbohidratos al día. La energía viene de grasas buenas y proteína."},
-  bayter:{n:"Método Dr. Bayter",d:"Proteína y grasa animal, sin carbohidratos: solo verduras de hoja. 3 comidas al día sin meriendas, sin frutas, harinas, cereales, legumbres ni azúcar."},
-  molecular:{n:"Alimentación molecular",d:"Del Dr. Benjamín Ramírez: cada comida lleva una proteína, un carbohidrato y una grasa, sin repetir del mismo grupo, y máximo 4 carbohidratos al día."}
+  bayter:{n:"Keto animal",d:"Proteína y grasa animal, sin carbohidratos: solo verduras de hoja. 3 comidas al día sin meriendas, sin frutas, harinas, cereales, legumbres ni azúcar."},
+  molecular:{n:"Combinación 1-1-1",d:"Cada comida lleva una proteína, un carbohidrato y una grasa, sin repetir del mismo grupo, y máximo 4 carbohidratos al día."}
 };
 const isKeto=st=>st==="keto"||st==="bayter";
 const hrsTxt=h=>h<1?"30 min":(h>=12?"12 h o más":h+" h");
@@ -617,7 +624,7 @@ const FOODS={
   alitas:{n:"Muslos o alitas de pollo con piel",h:"cocidos, sin hueso",k:230,p:24,c:0,f:15,cat:"Proteínas",rw:1.3,g:"meat",bird:1},
   res:{n:"Carne de res magra",h:"cocida",k:200,p:26,c:0,f:10,cat:"Proteínas",rw:1.35,g:"meat",beef:1},
   cerdo:{n:"Carne de cerdo",h:"cocida",k:242,p:27,c:0,f:14,cat:"Proteínas",rw:1.35,g:"meat",pork:1},
-  tocineta:{n:"Tocineta o panceta",h:"dorada",k:541,p:37,c:1.4,f:42,cat:"Grasas",g:"meat",pork:1,step:5},
+  tocineta:{n:"Tocino o tocineta",h:"dorada",k:541,p:37,c:1.4,f:42,cat:"Grasas",g:"meat",pork:1,step:5},
   salmon:{n:"Salmón o trucha",h:"cocido",k:208,p:20,c:0,f:13,cat:"Proteínas",rw:1.2,g:"fish"},
   camaron:{n:"Camarones",h:"cocidos",k:99,p:24,c:.2,f:.3,cat:"Proteínas",rw:1.25,g:"fish",shell:1},
   pescado:{n:"Pescado blanco (tilapia)",h:"cocido",k:128,p:26,c:0,f:2.7,cat:"Proteínas",rw:1.2,g:"fish"},
@@ -640,12 +647,14 @@ const FOODS={
   camote:{n:"Camote",h:"cocido",k:90,p:2,c:21,f:.2,cat:"Verduras y frutas",g:"plant"},
   pasta:{n:"Pasta",h:"cocida",k:158,p:5.8,c:31,f:.9,cat:"Granos",rw:.45,g:"plant"},
   frijoles:{n:"Frijoles",h:"cocidos, enteros",k:132,p:8.9,c:24,f:.5,cat:"Granos",rw:.4,g:"plant"},
+  yuca:{n:"Yuca",h:"cocida",k:160,p:1.4,c:38,f:.3,cat:"Verduras y frutas",g:"plant"},
+  pupusa:{n:"Pupusas de frijol con queso",k:225,p:8,c:29,f:8.5,cat:"Granos",unit:100,s:"pupusa",pl:"pupusas",fem:1,g:"dairy"},
   platano:{n:"Plátano maduro",h:"cocido",k:122,p:1.3,c:32,f:.4,cat:"Verduras y frutas",g:"plant"},
-  banano:{n:"Banano",k:89,p:1.1,c:23,f:.3,cat:"Verduras y frutas",unit:120,s:"banano",pl:"bananos",g:"plant"},
+  banano:{n:"Banano o guineo",k:89,p:1.1,c:23,f:.3,cat:"Verduras y frutas",unit:120,s:"banano",pl:"bananos",g:"plant"},
   manzana:{n:"Manzana",k:52,p:.3,c:14,f:.2,cat:"Verduras y frutas",unit:180,s:"manzana",pl:"manzanas",fem:1,g:"plant"},
   papaya:{n:"Papaya o melón",k:43,p:.5,c:11,f:.3,cat:"Verduras y frutas",g:"plant"},
   verduras:{n:"Verduras (ensalada o cocidas)",k:35,p:2,c:7,f:.3,cat:"Verduras y frutas",g:"plant"},
-  vketo:{n:"Verduras bajas en carbohidratos",h:"brócoli, espinaca, pepino, güisquil, lechuga",k:25,p:2,c:4,f:.3,cat:"Verduras y frutas",g:"plant"},
+  vketo:{n:"Verduras bajas en carbohidratos",h:"brócoli, espinaca, pepino, güisquil o pataste, lechuga",k:25,p:2,c:4,f:.3,cat:"Verduras y frutas",g:"plant"},
   aguacate:{n:"Aguacate",k:160,p:2,c:9,f:15,cat:"Grasas",g:"plant"},
   aceite:{n:"Aceite de oliva",k:884,p:0,c:0,f:100,cat:"Grasas",step:5,g:"plant"},
   mani:{n:"Maní (cacahuate)",k:567,p:26,c:16,f:49,cat:"Grasas",step:5,g:"plant"},
@@ -655,17 +664,17 @@ const FOODS={
 const T={
   base:{
     des:{n:"Desayuno",p:["huevo","yogur","requeson","tofu"],c:["avena","tortilla","pan","platano"],f:["aguacate","mani","almendras"],x:["papaya",150]},
-    alm:{n:"Almuerzo",p:["pollo","res","pescado","atun","lentejas","tofu","huevo","soya","garbanzos","camaron","salmon"],c:["arroz","papa","tortilla","pasta","camote","frijoles"],f:["aguacate","aceite"],x:["verduras",150]},
+    alm:{n:"Almuerzo",p:["pollo","res","pescado","atun","lentejas","tofu","huevo","soya","garbanzos","camaron","salmon"],c:["arroz","papa","tortilla","pasta","camote","frijoles","yuca"],f:["aguacate","aceite"],x:["verduras",150]},
     mer:{n:"Merienda",p:["yogur","huevo","atun","requeson","tofu","garbanzos"],c:["banano","manzana","pan","avena"],f:["almendras","mani"],x:null},
     mer2:{n:"Media mañana",p:["huevo","yogur","atun","requeson","tofu","garbanzos"],c:["manzana","banano","pan"],f:["mani","almendras"],x:null},
     cen:{n:"Cena",p:["pescado","pollo","huevo","atun","tofu","res","lentejas","soya","camaron","salmon"],c:["tortilla","camote","frijoles","arroz","papa"],f:["aguacate","aceite"],x:["verduras",150]}
   },
   general:{
     des:{n:"Desayuno",p:["huevo","yogur","requeson","huevo"],c:["pan","tortilla","avena","platano"],f:["aguacate","queso","mani","almendras"],x:["papaya",150]},
-    alm:{n:"Almuerzo",p:["pollo","res","cerdo","pescado","camaron","salmon","atun","huevo","lentejas"],c:["arroz","tortilla","papa","pasta","frijoles","camote"],f:["aguacate","aceite","queso"],x:["verduras",150]},
+    alm:{n:"Almuerzo",p:["pollo","res","cerdo","pescado","camaron","salmon","atun","huevo","lentejas"],c:["arroz","tortilla","papa","pasta","frijoles","camote","yuca"],f:["aguacate","aceite","queso"],x:["verduras",150]},
     mer:{n:"Merienda",p:["yogur","huevo","requeson","atun","queso"],c:["banano","manzana","pan","papaya"],f:["mani","almendras"],x:null},
     mer2:{n:"Media mañana",p:["yogur","huevo","requeson","atun"],c:["manzana","banano","papaya","pan"],f:["almendras","mani"],x:null},
-    cen:{n:"Cena",p:["huevo","pollo","pescado","res","cerdo","salmon","camaron","atun","requeson"],c:["tortilla","frijoles","pan","arroz","camote"],f:["aguacate","queso","aceite"],x:["verduras",150]}
+    cen:{n:"Cena",p:["huevo","pollo","pescado","res","cerdo","salmon","camaron","atun","requeson"],c:["tortilla","frijoles","pupusa","pan","arroz","camote","yuca"],f:["aguacate","queso","aceite"],x:["verduras",150]}
   },
   keto:{
     des:{n:"Desayuno",p:["huevo"],c:["vketo"],f:["mantequilla","aceite","queso","aguacate"],x:null},
@@ -681,7 +690,7 @@ const T={
   },
   molecular:{
     des:{n:"Desayuno",tag:"1 proteína + 1 carbohidrato + 1 grasa",p:["huevo","requeson","yogur","tofu"],c:["tortilla","pan","avena","platano","papaya"],f:["aguacate","almendras","mani"],x:null},
-    alm:{n:"Almuerzo",tag:"1 proteína + 1 carbohidrato + 1 grasa + verduras libres",p:["pollo","res","pescado","cerdo","atun","huevo","tofu"],c:["arroz","papa","tortilla","camote","pasta","frijoles","platano"],f:["aguacate","aceite"],x:["verduras",150]},
+    alm:{n:"Almuerzo",tag:"1 proteína + 1 carbohidrato + 1 grasa + verduras libres",p:["pollo","res","pescado","cerdo","atun","huevo","tofu"],c:["arroz","papa","tortilla","camote","pasta","frijoles","platano","yuca"],f:["aguacate","aceite"],x:["verduras",150]},
     mer:{n:"Merienda",tag:"1 proteína + 1 carbohidrato + 1 grasa",p:["yogur","requeson","huevo","atun"],c:["manzana","banano","papaya"],f:["almendras","mani"],x:null},
     mer2:{n:"Media mañana",tag:"Proteína + grasa (sin carbohidrato: máximo 4 al día)",p:["huevo","yogur","atun","requeson"],f:["almendras","mani","aguacate"],x:null},
     cen:{n:"Cena",tag:"1 proteína + carbohidrato pequeño + 1 grasa + verduras libres",cw:.5,p:["pescado","pollo","huevo","res","atun","tofu"],c:["frijoles","camote","tortilla","papa","lentejas"],f:["aguacate","aceite"],x:["verduras",150]}
@@ -709,7 +718,7 @@ function allowed(id,p){
 }
 function mac(id,g){const f=FOODS[id];return {k:f.k*g/100,p:f.p*g/100,c:f.c*g/100,f:f.f*g/100};}
 function roundG(id,g){const f=FOODS[id];if(g<=0)return 0;if(f.unit){const u=Math.max(1,Math.round(g/f.unit));return u*f.unit;}const st=f.step||(g<60?5:10);return Math.max(st,Math.round(g/st)*st);}
-const CAP_P={huevo:300,yogur:400,requeson:400,soya:120,camaron:300},CAP_C={avena:150,vketo:400,papaya:300,manzana:360,banano:240},CAP_F={aceite:30,mani:50,almendras:50,aguacate:200,queso:120,quesom:80,mantequilla:30,tocineta:60};
+const CAP_P={huevo:300,yogur:400,requeson:400,soya:120,camaron:300},CAP_C={pupusa:300,yuca:400,avena:150,vketo:400,papaya:300,manzana:360,banano:240},CAP_F={aceite:30,mani:50,almendras:50,aguacate:200,queso:120,quesom:80,mantequilla:30,tocineta:60};
 const CAP_F_KETO={aceite:45,mantequilla:40,queso:150,quesom:100,tocineta:80,aguacate:150,almendras:30};
 function capOf(id,s,keto,sc){sc=sc||1;return s==="p"?(CAP_P[id]||350)*sc:s==="c"?(CAP_C[id]||500)*sc:s==="f"?((keto&&CAP_F_KETO[id])||CAP_F[id]||200)*sc:Infinity;}
 const MIN_F={aguacate:25,aceite:5,mani:10,almendras:10,queso:20,quesom:15,mantequilla:5,tocineta:15};
@@ -743,9 +752,15 @@ function planMeals(r,p){
     const pk=S.pick[key]||{};
     const rot=p.dieta==="general"?menuDay()+(S.menuSeed||0):0;const RS={p:1,c:3,f:5};
     const ids={};for(const s of ["p","c","f"])ids[s]=lists[s].length?lists[s][(((pk[s]||0)+rot*RS[s])%lists[s].length+lists[s].length)%lists[s].length]:null;
+    // legumbre como proteína: el carbohidrato no debe ser otra legumbre (lentejas con frijoles deja la comida sin proteína real)
+    const LEG=["lentejas","garbanzos","frijoles","soya"];
+    if(ids.p&&ids.c&&LEG.includes(ids.p)&&LEG.includes(ids.c)){const L=lists.c,i0=L.indexOf(ids.c);const alt=[...L.slice(i0+1),...L.slice(0,i0)].find(i=>!LEG.includes(i));if(alt)ids.c=alt;}
     const tg={p:0,c:0,f:0};
     for(const m of ["p","c","f"])if(lists[m].length&&sum[m])tg[m]=r[m.toUpperCase()]*wOf(row,m)/sum[m];
-    const items=solveMeal(tg,ids,d.x,keto,1,p.dieta==="molecular"?"all":keto&&["des","alm","cen"].includes(key)?"p":false);
+    const main=["des","alm","cen"].includes(key);
+    let items=solveMeal(tg,ids,d.x,keto,1,p.dieta==="molecular"?"all":keto&&main?"p":false);
+    // si la proteína quedó en cero (por ejemplo lentejas con frijoles), se fuerza para que la comida principal siempre lleve proteína
+    if(main&&ids.p&&!items.some(x=>x[2]==="p"&&x[1]>0))items=solveMeal(tg,ids,d.x,keto,1,"p");
     out.push({key,n:d.n,tag:d.tag||"",share,items,lists});
   }
   // ajuste fino del día: 1) agrandar porciones hasta su tope normal, 2) agregar un segundo alimento del mismo grupo, 3) pasar el tope solo si hace falta
@@ -775,6 +790,8 @@ function planMeals(r,p){
         if(!pool.length)continue;
         // en keto, primero las grasas puras (aceite, mantequilla) para no subir la proteína
         if(keto&&slot==="f"&&gap>0){const pr=x=>FOODS[x[0]].p/FOODS[x[0]].f;const best=Math.min(...pool.map(pr));const top=pool.filter(x=>pr(x)<=best+.01);const item=top[rr++%top.length];item[1]+=stepOf(item[0]);moved=true;break;}
+        // al agrandar carbohidratos o grasas, primero los que traen menos proteína (arroz antes que frijoles) para no pasarse de proteína
+        if(gap>0&&slot!=="p"){const pr=x=>FOODS[x[0]].p/FOODS[x[0]].k;const best=Math.min(...pool.map(pr));const top=pool.filter(x=>pr(x)<=best*1.6+.005);const item=top[rr++%top.length];item[1]+=stepOf(item[0]);moved=true;break;}
         const item=pool[rr++%pool.length];item[1]+=gap>0?stepOf(item[0]):-stepOf(item[0]);moved=true;break;
       }
       if(moved)break;
@@ -799,8 +816,8 @@ const STYLE_GUIDE={
   general:{rules:["La app elige por ti: combina carnes, huevos, lácteos, granos, frutas y verduras, todo con medida.","El menú cambia solo cada día de la semana para que no te aburras. Si quieres otro, toca “Otro menú”.","Puedes cambiar cualquier alimento con ↻; las cantidades se ajustan solas.","Lo importante es llegar a tus calorías y a tu proteína; el resto es a tu gusto."],note:""},
   vegan:{rules:["Tus proteínas: tofu, soya texturizada, lentejas, garbanzos y frijoles. Combina legumbres con granos (frijoles con tortilla, lentejas con arroz) para una proteína más completa.","Toma un suplemento de vitamina B12 todos los días o según te indique tu médico: no viene en alimentos vegetales.","Acompaña frijoles y lentejas con limón, tomate o naranja: la vitamina C ayuda a absorber su hierro.","Busca bebidas vegetales fortificadas con calcio."],note:""},
   keto:{rules:["Menos de 30 g de carbohidratos al día. Tu base: huevos, carnes, pescado, aguacate, aceite de oliva, queso, nueces y verduras de hoja.","Evita azúcar, pan, tortilla, arroz, pasta, papa, frijoles, avena y frutas dulces.","Las primeras 1 o 2 semanas puedes sentir cansancio o dolor de cabeza. Toma suficiente agua y un poco más de sal.","Lee etiquetas: muchos productos “sin azúcar” tienen harinas."],note:"Keto ayuda a bajar de peso mientras la sigues, pero los estudios muestran que no es mejor que otras dietas con las mismas calorías. Si tienes diabetes con medicamento, problemas de riñón o colesterol alto, hazla con tu médico."},
-  bayter:{rules:["La proteína es el plato principal: huevos, res, cerdo, pollo con piel (alitas o muslos), salmón, trucha, merluza y camarones.","Grasa natural: mantequilla, manteca de cerdo, tocineta o panceta, aguacate, aceitunas, quesos enteros (no light), aceite de oliva extra virgen o de coco.","Sin carbohidratos: nada de frutas (solo limón), cereales, pan, tortilla, arroz, papa, legumbres, nueces ni semillas.","Verduras de hoja y bajas en carbohidratos sí: espinaca, lechuga, pepino, champiñones, zucchini, brócoli, y tomate y cebolla en poca cantidad.","Nada de aceites vegetales (maíz, girasol, canola, soya), endulzantes (ni stevia), leche, yogur, alcohol, pan ni galletas.","2 o 3 comidas al día, sin comer nada entre comidas; tu plan usa 3.","Toma al menos 3 litros de agua al día; él recomienda que 1 litro lleve una cucharadita de sal rosada. Si tienes presión alta o problemas de riñón, pregúntale a tu médico antes de agregar sal."],note:"Basado en las listas oficiales de alimentos del Dr. Jorge Bayter (doctorbayter.com) y en sus entrevistas. Nutricionistas critican que elimine frutas, legumbres y cereales y que use mucha carne roja y grasa animal, y varias de sus afirmaciones no tienen respaldo científico. Si tienes colesterol alto, diabetes o tomas medicamentos, hazlo con tu médico, y nunca dejes un medicamento por tu cuenta."},
-  molecular:{rules:["En cada comida principal (desayuno, almuerzo y cena) van siempre los tres: una proteína, un carbohidrato y una grasa.","Nunca dos del mismo grupo en la misma comida: no carbohidrato con carbohidrato (arroz con tortilla, pan con fruta), ni proteína con proteína (pollo con huevo), ni grasa con grasa (aguacate con aceite).","Máximo 4 fuentes de carbohidratos al día. Por eso, si haces 5 comidas, la media mañana va sin carbohidrato.","En la noche el carbohidrato va en porción pequeña: el plan le da la mitad que al almuerzo.","La fruta, los frijoles y las lentejas cuentan como carbohidrato. Las verduras, cebolla, tomate, ajo y especias son libres para guisar y acompañar.","Los carbohidratos no se eliminan: se aprenden a combinar."],note:"Basado en lo que el Dr. Benjamín Ramírez ha explicado públicamente sobre su Método de Aislamiento de Carbohidratos y su Alimentación Molecular (entrevistas en El Universal y Semana, y su sitio alimentacionmolecular.org). Su tabla de colores completa, con miles de alimentos, está en su Guía Básica oficial. Estas reglas de combinación no han sido confirmadas por estudios científicos independientes; lo que más influye en tu peso sigue siendo cuánto comes en total."}
+  bayter:{rules:["La proteína es el plato principal: huevos, res, cerdo, pollo con piel (alitas o muslos), salmón, trucha, merluza y camarones.","Grasa natural: mantequilla, manteca de cerdo, tocineta o panceta, aguacate, aceitunas, quesos enteros (no light), aceite de oliva extra virgen o de coco.","Sin carbohidratos: nada de frutas (solo limón), cereales, pan, tortilla, arroz, papa, legumbres, nueces ni semillas.","Verduras de hoja y bajas en carbohidratos sí: espinaca, lechuga, pepino, champiñones, zucchini, brócoli, y tomate y cebolla en poca cantidad.","Nada de aceites vegetales (maíz, girasol, canola, soya), endulzantes (ni stevia), leche, yogur, alcohol, pan ni galletas.","2 o 3 comidas al día, sin comer nada entre comidas; tu plan usa 3.","Toma al menos 3 litros de agua al día; algunos agregan a 1 litro una cucharadita de sal rosada. Si tienes presión alta o problemas de riñón, pregúntale a tu médico antes de agregar sal."],note:"Es un estilo de alimentación muy estricto. Nutricionistas critican que elimine frutas, legumbres y cereales y que use mucha carne roja y grasa animal, y algunos de sus beneficios no tienen respaldo científico. Si tienes colesterol alto, diabetes o tomas medicamentos, hazlo con tu médico, y nunca dejes un medicamento por tu cuenta."},
+  molecular:{rules:["En cada comida principal (desayuno, almuerzo y cena) van siempre los tres: una proteína, un carbohidrato y una grasa.","Nunca dos del mismo grupo en la misma comida: no carbohidrato con carbohidrato (arroz con tortilla, pan con fruta), ni proteína con proteína (pollo con huevo), ni grasa con grasa (aguacate con aceite).","Máximo 4 fuentes de carbohidratos al día. Por eso, si haces 5 comidas, la media mañana va sin carbohidrato.","En la noche el carbohidrato va en porción pequeña: el plan le da la mitad que al almuerzo.","La fruta, los frijoles y las lentejas cuentan como carbohidrato. Las verduras, cebolla, tomate, ajo y especias son libres para guisar y acompañar.","Los carbohidratos no se eliminan: se aprenden a combinar."],note:"Estas reglas de combinación no han sido confirmadas por estudios científicos independientes; lo que más influye en tu peso sigue siendo cuánto comes en total."}
 };
 
 /* ---------- ejercicios ---------- */
@@ -922,7 +939,7 @@ function showErrors(){
     f.classList.toggle("err",!!msg);m.hidden=!msg;m.textContent=msg;
   }
 }
-const REQ_TARGET={sexo:'.seg[data-k="sexo"]',edad:"#f-edad",peso:"#f-peso",altura:"#f-altura",actividad:'.seg[data-k="actividad"]',objetivo:'.seg[data-k="objetivo"]',entreno:'.seg[data-k="entreno"]',dieta:'.seg[data-k="dieta"]'};
+const REQ_TARGET={sexo:'.seg[data-k="sexo"]',edad:"#f-edad",peso:"#f-peso",altura:"#f-altura",actividad:'.seg[data-k="actividad"]',objetivo:'.seg[data-k="objetivo"]',entreno:'.seg[data-k="entreno"]',dieta:'.seg[data-k="dieta"]',consentimiento:"#consentBox"};
 function missingList(r){return REQ_ORDER.filter(k=>r.errors&&r.errors[k]);}
 function updateLocks(ok){
   $$("#nav a").forEach(a=>{const lk=a.dataset.v!=="perfil"&&!ok;let i=a.querySelector(".lock");
@@ -1084,7 +1101,7 @@ function renderMeals(r){
     </div>
     <p class="small">Las cantidades se redondean a porciones fáciles (huevos enteros, tortillas completas), por eso puede variar un poco. Una diferencia de ±100 kcal no cambia tus resultados.</p>
   </div>
-  ${meals.some(m=>m.items.some(x=>x[1]>550&&!FOODS[x[0]].unit))&&p.dieta!=="bayter"?`<div class="note warn"><b>Sugerencia</b><span>${p.comidas<5?`Necesitas bastante comida y algunas porciones salen grandes. En <a href="#perfil">Mi perfil</a> elige ${p.comidas===3?"4 o 5":"5"} comidas al día para repartirla en platos más cómodos.`:p.dieta==="molecular"?`Tus calorías son muy altas y la alimentación molecular permite una sola fuente de carbohidrato por comida y máximo 4 al día, por eso algunas porciones salen grandes. Si te cuesta comerlas, la opción Como de todo o Alimentación general las reparte mejor.`:`Tus calorías son muy altas, por eso algunas porciones salen grandes. Puedes agregar un batido entre comidas para completar.`}</span></div>`:""}
+  ${meals.some(m=>m.items.some(x=>x[1]>550&&!FOODS[x[0]].unit))&&p.dieta!=="bayter"?`<div class="note warn"><b>Sugerencia</b><span>${p.comidas<5?`Necesitas bastante comida y algunas porciones salen grandes. En <a href="#perfil">Mi perfil</a> elige ${p.comidas===3?"4 o 5":"5"} comidas al día para repartirla en platos más cómodos.`:p.dieta==="molecular"?`Tus calorías son muy altas y la Combinación 1-1-1 permite una sola fuente de carbohidrato por comida y máximo 4 al día, por eso algunas porciones salen grandes. Si te cuesta comerlas, la opción Como de todo o Alimentación general las reparte mejor.`:`Tus calorías son muy altas, por eso algunas porciones salen grandes. Puedes agregar un batido entre comidas para completar.`}</span></div>`:""}
   ${meals.map(m=>`
   <div class="card meal">
     <div class="meal-head"><div><h3>${m.n}</h3>${m.tag?`<span class="chip info" style="margin-top:4px">${m.tag}</span>`:""}</div><span class="small">${fmt(m.tot.k)} kcal · P ${Math.round(m.tot.p)} · C ${Math.round(m.tot.c)} · G ${Math.round(m.tot.f)}</span></div>
@@ -1105,7 +1122,7 @@ function renderMeals(r){
     <p class="small">Cantidades equivalentes para cambiar un alimento por otro sin salirte del plan.</p>
     <div class="fgrid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
       <div class="tablewrap"><table><thead><tr><th>25 g de proteína</th><th class="r">Cantidad</th></tr></thead><tbody>${ex(isKeto(r.st)?["pollo","alitas","res","cerdo","salmon","pescado","camaron","atun","huevo"]:["pollo","res","cerdo","pescado","salmon","camaron","atun","huevo","yogur","requeson","tofu","soya","lentejas","garbanzos"],"p",25)}</tbody></table></div>
-      ${isKeto(r.st)?"":`<div class="tablewrap"><table><thead><tr><th>30 g de carbohidratos</th><th class="r">Cantidad</th></tr></thead><tbody>${ex(["arroz","tortilla","pan","avena","papa","camote","pasta","frijoles","platano","banano"],"c",30)}</tbody></table></div>`}
+      ${isKeto(r.st)?"":`<div class="tablewrap"><table><thead><tr><th>30 g de carbohidratos</th><th class="r">Cantidad</th></tr></thead><tbody>${ex(["arroz","tortilla","pan","avena","papa","camote","pasta","frijoles","platano","yuca","banano"],"c",30)}</tbody></table></div>`}
       <div class="tablewrap"><table><thead><tr><th>10 g de grasa</th><th class="r">Cantidad</th></tr></thead><tbody>${ex(r.st==="bayter"?["mantequilla","tocineta","quesom","aguacate","aceite"]:["aguacate","aceite","mani","almendras","queso","mantequilla"],"f",10)}</tbody></table></div>
     </div>
   </div>
@@ -1368,7 +1385,7 @@ const BAD_RESULT="La IA no dio un resultado claro. Intenta con otra foto con mej
 const NO_NET="No hay conexión a internet. Revisa tu conexión e intenta de nuevo.";
 function scanPrompt(){
   const r=calc(S.p);
-  const sys='Eres un nutricionista experto. Analizas fotos de comida y también de productos empacados o bebidas (si se ve la etiqueta o tabla nutricional, úsala). Responde SOLO con un objeto JSON válido, sin texto antes ni después, con exactamente este formato: {"es_comida":true,"plato":"nombre corto del plato o producto","confianza":"alta|media|baja","procesamiento":"natural|minimamente_procesado|procesado|ultraprocesado","alimentos":[{"nombre":"","porcion":"ej. 1 taza (150 g)","kcal":0,"proteina_g":0,"carbohidratos_g":0,"grasas_g":0,"frecuencia":"diario|frecuente|ocasional|evitar"}],"total":{"kcal":0,"proteina_g":0,"carbohidratos_g":0,"grasas_g":0,"fibra_g":0,"azucar_g":0,"sodio_mg":0},"largo_plazo":{"veredicto":"diario|frecuente|ocasional|evitar","frecuencia":"cada cuánto se puede comer, ej. todos los días / 2 o 3 veces por semana / 1 vez al mes","explicacion":"1 o 2 frases sobre si se puede consumir por largos periodos","beneficios":["máximo 3, cortos"],"riesgos":["máximo 3, cortos: qué pasa si se come muy seguido"],"alternativa":"una opción más saludable y fácil de conseguir, o vacío si ya es buena opción"},"notas":"consejo breve de 1 o 2 frases"}. Identifica cada alimento visible, estima la porción real usando el plato, los cubiertos o las manos como referencia, e incluye el aceite o las salsas probables. Los valores son de la porción completa visible. El total debe ser la suma de los alimentos. Para decidir la frecuencia y el consumo a largo plazo usa la evidencia y las guías de salud (OMS y similares): azúcares añadidos, sodio, grasas trans y saturadas, carnes procesadas, alcohol, nivel de procesamiento, fibra, proteína y micronutrientes; diario = se puede comer todos los días por años; frecuente = varias veces por semana; ocasional = de vez en cuando; evitar = no conviene consumirlo de forma habitual. Ten en cuenta el objetivo, el tipo de alimentación y la salud de la persona. Sé claro y honesto, sin exagerar ni asustar. Usa nombres en español de Latinoamérica (Guatemala). Si la imagen no muestra comida ni bebida, pon es_comida en false, deja alimentos vacío y explica en notas.';
+  const sys='Eres un nutricionista experto. Analizas fotos de comida y también de productos empacados o bebidas (si se ve la etiqueta o tabla nutricional, úsala). Responde SOLO con un objeto JSON válido, sin texto antes ni después, con exactamente este formato: {"es_comida":true,"plato":"nombre corto del plato o producto","confianza":"alta|media|baja","procesamiento":"natural|minimamente_procesado|procesado|ultraprocesado","alimentos":[{"nombre":"","porcion":"ej. 1 taza (150 g)","kcal":0,"proteina_g":0,"carbohidratos_g":0,"grasas_g":0,"frecuencia":"diario|frecuente|ocasional|evitar"}],"total":{"kcal":0,"proteina_g":0,"carbohidratos_g":0,"grasas_g":0,"fibra_g":0,"azucar_g":0,"sodio_mg":0},"largo_plazo":{"veredicto":"diario|frecuente|ocasional|evitar","frecuencia":"cada cuánto se puede comer, ej. todos los días / 2 o 3 veces por semana / 1 vez al mes","explicacion":"1 o 2 frases sobre si se puede consumir por largos periodos","beneficios":["máximo 3, cortos"],"riesgos":["máximo 3, cortos: qué pasa si se come muy seguido"],"alternativa":"una opción más saludable y fácil de conseguir, o vacío si ya es buena opción"},"notas":"consejo breve de 1 o 2 frases"}. Identifica cada alimento visible, estima la porción real usando el plato, los cubiertos o las manos como referencia, e incluye el aceite o las salsas probables. Los valores son de la porción completa visible. El total debe ser la suma de los alimentos. Para decidir la frecuencia y el consumo a largo plazo usa la evidencia y las guías de salud (OMS y similares): azúcares añadidos, sodio, grasas trans y saturadas, carnes procesadas, alcohol, nivel de procesamiento, fibra, proteína y micronutrientes; diario = se puede comer todos los días por años; frecuente = varias veces por semana; ocasional = de vez en cuando; evitar = no conviene consumirlo de forma habitual. Ten en cuenta el objetivo, el tipo de alimentación y la salud de la persona. Sé claro y honesto, sin exagerar ni asustar. Usa nombres en español de Centroamérica (Guatemala, El Salvador, Honduras, Nicaragua, Costa Rica, Panamá), por ejemplo pupusas, casamiento, gallo pinto, baleadas, tamales, chuchitos o yuca. Si la imagen no muestra comida ni bebida, pon es_comida en false, deja alimentos vacío y explica en notas.';
   const P_=S.p;const noCome=[P_.sinRes&&"carne de res ni de cerdo",P_.sinAves&&"pollo, pavo ni otras aves",P_.sinMariscos&&"mariscos",P_.sinLacteos&&"lácteos"].filter(Boolean);
   const avoid=noCome.length?` No como ${noCome.join("; ")} (por alergia u otra razón): si la foto tiene algo de eso, avísame claramente al inicio de las notas.`:"";
   const salud=[P_.condicion&&"tengo diabetes, presión alta, problemas de riñón o de corazón",P_.sexo==="m"&&P_.embarazo&&"estoy embarazada o dando pecho",+P_.edad>=60&&`tengo ${P_.edad} años`].filter(Boolean);
